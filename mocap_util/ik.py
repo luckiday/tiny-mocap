@@ -14,26 +14,21 @@ smooth_length = 7
 history = deque(maxlen=smooth_length)
 
 
+
 def smooth_animation(landmark_list):
+    """
+    Apply Savitzky-Golay filter to smooth the animation over a window of frames.
+    """
     history.append(landmark_list)
     if len(history) < smooth_length:
         return landmark_list
-    else:
-        new_landmarks = np.copy(landmark_list)
-        for i in range(len(landmark_list)):
-            # smooth the z of each landmark
-            x_list = [history[j][i, 0] for j in range(smooth_length)]
-            y_list = [history[j][i, 1] for j in range(smooth_length)]
-            z_list = [history[j][i, 2] for j in range(smooth_length)]
-            new_x_list = savgol_filter(x_list, smooth_length, 2, mode='nearest')
-            new_y_list = savgol_filter(y_list, smooth_length, 2, mode='nearest')
-            new_z_list = savgol_filter(z_list, smooth_length, 2, mode='nearest')
-            new_landmarks[i, 0] = new_x_list[-1]
-            new_landmarks[i, 1] = new_y_list[-1]
-            new_landmarks[i, 2] = new_z_list[-1]
-            history[-1] = new_landmarks
-        return new_landmarks
 
+    new_landmarks = np.copy(landmark_list)
+    for i in range(len(landmark_list)):
+        xyz_list = np.array([history[j][i] for j in range(smooth_length)])
+        new_xyz = savgol_filter(xyz_list, smooth_length, 2, mode='nearest', axis=0)
+        new_landmarks[i] = new_xyz[-1]
+    return new_landmarks
 
 def to_trans_dict(pose_landmark,
                   left_hand_landmarks=None,
@@ -420,23 +415,14 @@ def unit_vector(vector):
 
 
 def angle_between(v1, v2):
-    """
-    Returns the angle in degrees between vectors 'v1' and 'v2'::
-    """
-    v1_u = unit_vector(v1)
-    v2_u = unit_vector(v2)
+    v1_u = normalize(v1)
+    v2_u = normalize(v2)
     return np.degrees(np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0)))
 
 
 def to_angle_axis(rotation_m):
-    """
-    Transform the rotation matrix to degrees and axis
-    :param rotation_m: rotation matrix
-    :return: [angle, x, y, z]
-    """
     q = Quaternion(matrix=rotation_m.transpose())
-    axis = q.axis
-    return [q.degrees, axis[0], axis[1], axis[2]]
+    return [q.degrees, q.axis[0], q.axis[1], q.axis[2]]
 
 
 def middle(v1, v2):
@@ -444,20 +430,16 @@ def middle(v1, v2):
 
 
 def vector_to_angle_axis(v):
-    """
-    Calculate the rotation according to the x and z axis transform y to v
-    :param v: target vector
-    :return: [angle, x, y, z]
-    """
-    y = np.asarray([0., 1., 0.])
-    angle = angle_between(v, y)
-    axis = np.cross(y, v)
+    angle = angle_between(v, np.array([0., 1., 0.]))
+    axis = np.cross(np.array([0., 1., 0.]), v)
+    if np.linalg.norm(axis) == 0: axis = [1, 0, 0]  # Prevent division by zero
+    else: axis = normalize(axis)
     return [angle, axis[0], axis[1], axis[2]]
 
 
-def angle_axis_to_matrix(vec4):
-    rotation = Quaternion(axis=[vec4[1], vec4[2], vec4[3]], degrees=vec4[0])
-    return rotation.rotation_matrix
+def angle_axis_to_matrix(angle_axis):
+    q = Quaternion(axis=angle_axis[1:], degrees=angle_axis[0])
+    return q.rotation_matrix
 
 
 def rotate_y(vec4):
