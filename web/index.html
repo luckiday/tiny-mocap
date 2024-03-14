@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tiny MoCap</title>
+    <meta charset="utf-8">
+    <link rel="icon" href="favicon.ico">
+    <link rel="stylesheet" type="text/css"
+          href="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils@0.6/control_utils.css" crossorigin="anonymous">
+    <!--  <link rel="stylesheet" type="text/css" href="demo.css" crossorigin="anonymous">-->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3/camera_utils.js"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils@0.6/control_utils.js"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.3/drawing_utils.js"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/holistic@0.5/holistic.js" crossorigin="anonymous"></script>
+    <script src="web/animation_sample.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var transDict = null;
+    </script>
+    <link rel="stylesheet" href="web/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+</head>
+<body>
+<div class="container">
+    <!--    <video class="input_video"></video>-->
+    <div class="avatar">
+        <img class="bg-image" id="bg-image" src="background/bg-server.jpg" width="1280" height="720px"/>
+        <canvas class="avatar_canvas" width="1280" height="720px">
+        </canvas>
+    </div>
+    <!--    <div class="canvas-container">-->
+    <!--        <canvas class="output_canvas" width="420px" height="280px">-->
+    <!--        </canvas>-->
+    <!--        <div class="loading">-->
+    <!--            <div class="spinner"></div>-->
+    <!--            <div class="message">-->
+    <!--                Loading-->
+    <!--            </div>-->
+    <!--        </div>-->
+    <!--    </div>-->
+</div>
+
+<!--<div class="ts_english">-->
+<!--    <p id="frame_parameters"></p>-->
+<!--    <p id="e_glosses">Gloss: </p>-->
+<!--</div>-->
+<div class="shoutout">
+    <div>
+        <a href="/">
+            Go to English-ASL translation
+        </a>
+    </div>
+</div>
+<div class="control-panel">
+</div>
+<!-- partial -->
+<!--<script type="module" src="web/mocap.js"></script>-->
+<script type="module" src="web/avatar.js"></script>
+</body>
+</html>
